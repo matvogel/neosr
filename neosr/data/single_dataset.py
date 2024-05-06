@@ -45,6 +45,8 @@ class single(data.Dataset):
             with open(self.opt['meta_info_file'], 'r') as fin:
                 self.paths = [
                     osp.join(self.lq_folder, line.rstrip().split(' ')[0]) for line in fin]
+        elif "input_file" in self.opt:
+            self.paths = [self.opt["input_file"]]
         else:
             self.paths = sorted(list(scandir(self.lq_folder, full_path=True)))
 

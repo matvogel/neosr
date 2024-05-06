@@ -513,8 +513,7 @@ class default():
         self.net_g.train()
 
         _, _, h, w = self.output.size()
-        self.output = self.output[:, :, 0:h -
-                                  mod_pad_h * scale, 0:w - mod_pad_w * scale]
+        self.output = self.output[:, :, 0:h - mod_pad_h * scale, 0:w - mod_pad_w * scale]
 
     '''
     # TODO: verify
@@ -695,7 +694,7 @@ class default():
                     save_img_path = osp.join(self.opt['path']['visualization'], img_name,
                                              f'{img_name}_{current_iter}.png')
                 else:
-                    if self.opt['val']['suffix']:
+                    if self.opt['val'].get("suffix", False):
                         save_img_path = osp.join(self.opt['path']['visualization'], dataset_name,
                                                  f'{img_name}_{self.opt["val"]["suffix"]}.png')
                     else:
@@ -765,6 +764,23 @@ class default():
             self.nondist_validation(
                 dataloader, current_iter, tb_logger, save_img)
 
+    @torch.no_grad()
+    def upscale_img(self, img_batch):
+        self.is_train = False
+        
+        # create dict and set the data
+        img_data = {"lq": img_batch}
+        self.feed_data(img_data)
+        self.test()
+        visuals = self.get_current_visuals()
+        sr_img = tensor2img([visuals['result']])
+        
+        del self.lq
+        del self.output
+        torch.cuda.empty_cache()
+        self.is_train = True
+        return sr_img
+        
     def get_current_log(self):
         return self.log_dict
 

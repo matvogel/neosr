@@ -120,6 +120,8 @@ def parse_options(root_path, is_train=True):
     parser.add_argument('--force_yml', nargs='+', default=None,
                         help='Force to update yml files. Examples: train:total_iter=200000')
 
+    parser.add_argument("--input_file", type=str, default=None)
+    
     # Options for convert.py script
    
     group = parser.add_argument_group('model conversion')
